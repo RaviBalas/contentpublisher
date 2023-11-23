@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'django_restframework'
+    'django_restframework',
+    'common.apps.CommonConfig'
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
+try:
+    from .logger_settings import *
+except:
+    # in case of any error, pass silently.
+    pass
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -123,3 +129,18 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SECRET_KEY_JWT = {"k": "Wal4ZHCBsml0Al_Y8faoNTKsXCkw8eefKXYFuwTBOpA", "kty": "oct"}
+ACCESS_VALID_SECONDS = 86400
+JWT_ALG = "HS256"
+ENCRYPT_ALG_DATA = {"alg": "A256KW", "enc": "A256CBC-HS512"}
+
+# Email Settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "abc@gmail.com"
+EMAIL_HOST_PASSWORD = "123"
+DEFAULT_FROM_EMAIL = "name <abc@gmail.com>"
