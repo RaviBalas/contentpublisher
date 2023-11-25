@@ -8,7 +8,7 @@ from common.db_log_handler import log_error
 from django_core.settings.base import DEFAULT_FROM_EMAIL
 
 
-# Error-Code: 200
+# Error-Code: 2000
 
 def send_email_with_template(request, email_config, email_data):
     try:

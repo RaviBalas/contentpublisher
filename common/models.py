@@ -43,6 +43,7 @@ class ApiLogsModel(Audit):
     task_name = models.CharField(max_length=255, blank=True, null=True, db_index=True)  # Mer, cheque
     request_type = models.CharField(max_length=255, blank=True, null=True)  # get post
     url = models.TextField(blank=True, null=True)
+    param = models.TextField(blank=True, null=True)
     data = models.TextField(blank=True, null=True)
     files = models.TextField(blank=True, null=True)
     json = models.TextField(blank=True, null=True)  # remove this column later
