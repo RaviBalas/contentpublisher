@@ -13,6 +13,7 @@ defusedxml==0.7.1
 diff-match-patch==20230430
 Django==4.2.7
 django-celery-beat==2.5.0
+django-environ==0.11.2
 django-extensions==3.2.3
 django-import-export==3.3.3
 django-timezone-field==6.0.1
@@ -24,8 +25,10 @@ MarkupPy==1.14
 odfpy==1.4.1
 openpyxl==3.1.2
 prompt-toolkit==3.0.41
+psycopg2-binary==2.9.9
 python-crontab==3.0.0
 python-dateutil==2.8.2
+pytube==15.0.0
 pytz==2023.3.post1
 PyYAML==6.0.1
 requests==2.31.0

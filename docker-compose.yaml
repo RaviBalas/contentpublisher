@@ -1,0 +1,28 @@
+version: "3.3"
+services:
+  backend0:
+    build: .
+    env_file:
+      - ./.env
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - .:/target/media
+    command: bash -c "python manage.py runserver 0.0.0.0:8080"
+    ports:
+      - "8000:8080"
+  backend:
+    build: .
+    volumes:
+      - .:/target/media
+    env_file:
+      - ./.env
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    command: bash -c "python manage.py runserver 0.0.0.0:8080"
+    ports:
+      - "8001:8080"

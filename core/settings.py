@@ -10,21 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+import environ
+from os.path import dirname, abspath
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+DJANGO_ROOT = dirname(dirname(abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ly36is1opoq)e3nc^a&pdxo@9rpxz8bvik$*qil1m0yt_k5y-m'
-
+env = environ.Env()
+environ.Env.read_env(os.path.join(DJANGO_ROOT, ".env"))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["https://contentpublisher.onrender.com"]
 
 # Application definition
 
@@ -82,12 +87,23 @@ except:
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
+    'default': {
+        'ENGINE': os.getenv("DB_ENGINE", 'django.db.backends.postgresql_psycopg2'),
+        'NAME': os.getenv("DB_NAME", ''),
+        'USER': os.getenv("DB_USER", ''),
+        'PASSWORD': os.getenv("DB_PASSWORD", ),
+        'HOST': os.getenv("DB_HOST", ''),
+        'PORT': int(os.getenv("DB_PORT", '5432')),
+    },
 }
 
+default_database = os.environ.get('DJ_DB', 'default')
+DATABASES['default'] = DATABASES[default_database]
+print("selected DB=", DATABASES['default']["NAME"])
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
