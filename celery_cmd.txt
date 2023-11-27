@@ -1,0 +1,1 @@
+celery -A core worker -l DEBUG --concurrency=3 -Q main_queue

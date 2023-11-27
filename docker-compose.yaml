@@ -1,6 +1,6 @@
 version: "3.3"
 services:
-  backend0:
+  backend:
     build: .
     env_file:
       - ./.env
@@ -8,21 +8,15 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-    volumes:
-      - .:/target/media
     command: bash -c "python manage.py runserver 0.0.0.0:8080"
     ports:
       - "8000:8080"
-  backend:
+  main_queue:
     build: .
-    volumes:
-      - .:/target/media
     env_file:
       - ./.env
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
-    command: bash -c "python manage.py runserver 0.0.0.0:8080"
-    ports:
-      - "8001:8080"
+    command: bash -c "celery -A core worker -l DEBUG --concurrency=3 -Q main_queue"

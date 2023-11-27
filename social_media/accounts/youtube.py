@@ -16,7 +16,7 @@ class Youtube(Account):
         super(Youtube, self).__init__(*args, **kwargs)
 
     def generate_public_url(self, social_media_url):
-        pass  # return public_url
+        pass  # return res, is_success
 
     def publish_content(self, identifier, **kwargs):
-        pass
+        pass  # return res, is_success

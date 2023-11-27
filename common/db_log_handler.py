@@ -5,6 +5,13 @@ DJANGO_DB_LOGGER_ENABLE_FORMATTER = True
 db_default_formatter = logging.Formatter()
 
 
+# NOTSET = 0
+# DEBUG = 10
+# INFO = 20
+# WARNING = 30
+# ERROR = 40
+# CRITICAL = 50
+
 def log_error(exc, code):
     db_logger = logging.getLogger('db')
     db_logger = logging.LoggerAdapter(db_logger, {'error': code, 'method': 'get'})

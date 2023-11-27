@@ -43,8 +43,11 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'import_export',
+    'django_celery_beat',
+    'django_celery_results',
     'common.apps.CommonConfig',
     'social_media.apps.SocialMediaConfig',
+    'publisher.apps.PublisherConfig',
 ]
 
 MIDDLEWARE = [
@@ -138,6 +141,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -157,6 +163,17 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = "abc@gmail.com"
 EMAIL_HOST_PASSWORD = "123"
 DEFAULT_FROM_EMAIL = "name <abc@gmail.com>"
+# CELERY conf
+REDIS_HOST = env("REDIS_HOST")
+REDIS_PORT = env("REDIS_PORT")
+BROKER_URL = "redis://" + REDIS_HOST + ":" + REDIS_PORT + "/0"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERYBEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERYD_POOL_RESTARTS = True
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_TIMEZONE = "Asia/Kolkata"
 
 # facebook
 FACEBOOK_ENDPOINT = "https://graph.facebook.com/v18.0"

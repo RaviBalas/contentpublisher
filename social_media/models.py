@@ -28,4 +28,4 @@ class Credentials(Audit):
         db_table = "credential"
 
     def __str__(self):
-        return self.platform.name
+        return "{}/{}".format(self.platform.name, self.identifier)
