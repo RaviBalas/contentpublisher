@@ -13,6 +13,6 @@ class PlatformInfoAdmin(ImportExportModelAdmin):
 
 @admin.register(Credentials)
 class CredModelAdmin(ImportExportModelAdmin):
-    list_display = ("platform", "client_id", "client_secret", "api_key", "username", "password")
+    list_display = ("platform", "identifier", "client_id", "client_secret", "api_key", "username", "password")
     search_fields = ('platform',)
     list_per_page = 25

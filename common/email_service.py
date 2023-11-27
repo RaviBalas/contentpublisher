@@ -20,5 +20,5 @@ def send_email_with_template(request, email_config, email_data):
 
         email_message.send(fail_silently=False)
     except SMTPException as e:
-        log_error(e, 200)
+        log_error(e, 2500)
         raise GenericException(detail='There was an error sending an email', code=200)

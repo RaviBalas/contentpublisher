@@ -14,3 +14,9 @@ class Youtube(Account):
         self.name = "youtube"
         self.base_url = settings.YOUTUBE_ENDPOINT
         super(Youtube, self).__init__(*args, **kwargs)
+
+    def generate_public_url(self, social_media_url):
+        pass  # return public_url
+
+    def publish_content(self, identifier, **kwargs):
+        pass
