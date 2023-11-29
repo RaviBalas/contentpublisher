@@ -1,7 +1,22 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 
-from .models import PlatformInfo, Credentials
+from .models import PlatformInfo, Credentials, Tags, Category
+
+
+@admin.register(Tags)
+class TagsAdmin(ImportExportModelAdmin):
+    list_display = ("name",)
+    search_fields = ('name',)
+    list_per_page = 25
+
+
+@admin.register(Category)
+class CategoryAdmin(ImportExportModelAdmin):
+    list_display = ("name",)
+    search_fields = ('name',)
+    filter_horizontal = ("tags",)
+    list_per_page = 25
 
 
 @admin.register(PlatformInfo)
