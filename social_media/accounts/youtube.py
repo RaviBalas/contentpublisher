@@ -46,7 +46,6 @@ class Youtube(Account):
                     res = {
                         'public_url': public_url,
                         'title': title,
-                        'is_success': is_success
                     }
                     print(f"Video saved at: {full_path}")
                 else:
