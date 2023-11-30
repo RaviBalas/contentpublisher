@@ -178,3 +178,4 @@ CELERY_TIMEZONE = "Asia/Kolkata"
 # facebook
 FACEBOOK_ENDPOINT = "https://graph.facebook.com/v18.0"
 YOUTUBE_ENDPOINT = ""
+PUBLIC_URL = ""

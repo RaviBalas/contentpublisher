@@ -18,6 +18,11 @@ class Testview(APIView):
                 insta_obj = acc_inst.account_obj
                 response = insta_obj.get_list_of_media("app1")
                 return Response({"key": data["key"], "data": response}, status=200)
+            elif data.get("key") == "video_download":
+                acc_inst = AccountManager("youtube")
+                insta_obj = acc_inst.account_obj
+                response = insta_obj.generate_public_url("https://youtube.com/shorts/agJ0CvXXNRo?si=1Ub0GU28dUA_fAKB")
+                return Response({"key": data["key"], "data": response}, status=200)
             elif data.get("key") == "create_container":
                 acc_inst = AccountManager("instagram")
                 insta_obj = acc_inst.account_obj
@@ -36,7 +41,7 @@ class Testview(APIView):
                 response = insta_obj.publish_container("app1", container_id=request.data.get("container_id"))
                 return Response({"key": data["key"], "data": response})
             else:
-                keys = ["list_media", "create_container", "container_status", "media_publish"]
+                keys = ["list_media", "create_container", "container_status", "media_publish", "video_download"]
                 return Response({"error": "please pass atleast one key", "data": keys}, status=400)
         except Exception as e:
             log_error(e, 3500)
