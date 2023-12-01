@@ -60,6 +60,6 @@ class InstagramView(APIView):
         acc_inst = AccountManager("instagram")
         insta_obj = acc_inst.account_obj
         res, is_success = insta_obj.publish_content(request.query_params.get("identifier"),
-                                                    video_url=request.data["video_url"],
-                                                    video_caption=request.data["video_caption"])
+                                                    url=request.data["url"],
+                                                    caption=request.data["caption"])
         return Response({"data": res}, status=200 if is_success else 400)

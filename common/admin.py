@@ -10,6 +10,7 @@ class ApiLogsModelAdmin(ImportExportModelAdmin):
                     "json", "response", "time_taken")
     ordering = ("-created_at",)
     search_fields = ("type", "url", "task_name")
+    list_filter = ("task_name", "status_code", "request_type")
     list_per_page = 25
 
 
@@ -17,5 +18,6 @@ class ApiLogsModelAdmin(ImportExportModelAdmin):
 class CustomLogAdmin(ImportExportModelAdmin):
     list_display = ("created_at", "level", "msg", "trace", "create_datetime", "error", "method")
     search_fields = ("error", "msg")
+    list_filter = ("level",)
     ordering = ("-created_at",)
     list_per_page = 25

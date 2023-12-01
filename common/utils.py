@@ -5,6 +5,9 @@ from django.utils import timezone
 
 from common.db_log_handler import log_error
 from common.models import ApiLogsModel
+import logging
+
+logger = logging.getLogger("db")
 
 
 def save_logs(created_datetime, task_name=None, request_type=None, params=None, url=None, data=None, files=None,
@@ -12,7 +15,7 @@ def save_logs(created_datetime, task_name=None, request_type=None, params=None, 
               response=None, status_code=None, error=None):
     try:
         completion_datetime = timezone.now()
-        print("saving logs")
+        logger.debug(msg=f"{task_name} > saving logs")
         time_taken = (completion_datetime - created_datetime).seconds
         api_obj = {"time_taken": time_taken, "task_name": task_name, "request_type": request_type,
                    "url": url, "status_code": status_code, "error": error}
@@ -49,7 +52,7 @@ def req_api_wrapper(request_type, url, json_data=None, headers=None, data=None, 
         error = str(e)
         print("Except Exception as e while calling api", str(e))
         status_code = 500
-        res = None
+        res = str(e)
 
     save_logs(created_datetime, task_name=task_name, request_type=request_type, url=url, data=data, files=files,
               params=params, json_body=json_data, response=res, status_code=status_code, error=error)

@@ -176,6 +176,6 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_TIMEZONE = "Asia/Kolkata"
 
 # facebook
-FACEBOOK_ENDPOINT = "https://graph.facebook.com/v18.0"
-YOUTUBE_ENDPOINT = ""
-PUBLIC_URL = ""
+FACEBOOK_ENDPOINT = os.getenv("FACEBOOK_ENDPOINT", "https://graph.facebook.com/v18.0")
+YOUTUBE_ENDPOINT = os.getenv("YOUTUBE_ENDPOINT", "")
+BACKEND_PUBLIC_URL = os.getenv("BACKEND_PUBLIC_URL", "")

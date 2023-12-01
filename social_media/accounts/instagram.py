@@ -1,5 +1,6 @@
-import posixpath
+import logging
 import time
+import posixpath
 import urllib.parse
 
 from django.conf import settings
@@ -7,6 +8,9 @@ from django.conf import settings
 from common.utils import req_api_wrapper
 from social_media.models import Credentials
 from .account import Account
+from social_media.initial_mapping import instagram_error_keys_codes
+
+logger = logging.getLogger("db")
 
 
 class Instagram(Account):
@@ -14,6 +18,7 @@ class Instagram(Account):
         self.name = "instagram"
         self.base_url = settings.FACEBOOK_ENDPOINT
         super(Instagram, self).__init__(*args, **kwargs)
+        self.error_code_mapping = instagram_error_keys_codes
 
     def generate_public_url(self, social_media_url):
         pass  # return public_url
@@ -51,15 +56,18 @@ class Instagram(Account):
         return res, is_success
 
     def publish_content(self, identifier, **kwargs):
-        res, is_success = self.create_container(identifier, video_url=kwargs["video_url"],
-                                                video_caption=kwargs["video_caption"])
+        logger.log(10, msg=f"In instagram_publish content: identifier={identifier}, kwargs={kwargs}")
+        res, is_success = self.create_container(identifier,
+                                                video_url=kwargs["media_url"],
+                                                video_caption=kwargs["media_caption"])
         if is_success:
             while True:
+                time.sleep(60)
                 res, is_success = self.get_container_status(identifier, container_id=res["id"])
-                time.sleep(5)
-                if res["status_code"] == "FINISHED":
+                if is_success and res["status_code"] == "FINISHED":
                     res, is_success = self.publish_container(identifier, container_id=res["id"])
                     break
-                elif res["status_code"] == "ERROR":
+                elif is_success and res["status_code"] == "ERROR":
+                    is_success = False
                     break
         return res, is_success

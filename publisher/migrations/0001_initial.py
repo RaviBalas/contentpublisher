@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('media_name', models.CharField(blank=True, max_length=255, null=True)),
                 ('intermediate_id', models.CharField(blank=True, max_length=255, null=True)),
                 ('status', models.CharField(choices=[('created', 'Created'), ('public_url_created', 'Public Url Created'), ('success', 'Success'), ('failed', 'Failed')], default='created', max_length=50)),
-                ('error', models.CharField(blank=True, max_length=20, null=True)),
+                ('error', models.TextField(blank=True, null=True)),
                 ('category', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='contents', to='social_media.category')),
                 ('destination_identifier', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='destination_contents', to='social_media.credentials')),
                 ('source_identifier', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='source_contents', to='social_media.credentials')),

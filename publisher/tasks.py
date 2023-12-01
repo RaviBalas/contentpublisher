@@ -1,6 +1,6 @@
 from celery import shared_task
 
-from .models import ContentModel
+from .models import ContentModel, StatusChoices
 from social_media.accounts import AccountManager
 import logging
 
@@ -23,12 +23,14 @@ def generate_public_url(source_identifier=None, content_ids=None):
         account_obj = AccountManager(inst.source_identifier.platform.name).account_obj
         res, is_success = account_obj.generate_public_url(inst.social_media_url)
         if is_success:
-            inst.video_public_url = res.get("url")
-            inst.status = "PUBLIC_URL_CREATED"
+            inst.media_public_url = res.get("url")
+            inst.media_name = res.get("name")
+            inst.status = StatusChoices.PUBLIC_URL_CREATED
+            inst.error = None
         else:
             inst.error = res
-            inst.status = "FAILED"
-        inst.save(update_fields=["updated_at", "video_public_url", "status", "error"])
+            inst.status = StatusChoices.FAILED
+        inst.save(update_fields=["updated_at", "media_public_url", "media_name", "status", "error"])
 
 
 @shared_task(name="publish_content", queue="main_queue")
@@ -45,11 +47,12 @@ def publish_content(destination_identifier=None, content_ids=None):
 
     for inst in content_queryset:
         account_obj = AccountManager(inst.destination_identifier.platform.name).account_obj
-        res, is_success = account_obj.publish_content(inst.social_media_url)
+        res, is_success = account_obj.publish_content(inst.destination_identifier.identifier,
+                                                      media_caption=inst.media_name, media_url=inst.media_public_url)
         if is_success:
-            inst.status = "SUCCESS"
+            inst.status = StatusChoices.SUCCESS
             inst.error = None
         else:
             inst.error = res
-            inst.status = "FAILED"
+            inst.status = StatusChoices.FAILED
         inst.save(update_fields=["updated_at", "status", "error"])
