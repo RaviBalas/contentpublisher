@@ -1,10 +1,25 @@
+import logging
 from celery import shared_task
-
 from .models import ContentModel, StatusChoices
 from social_media.accounts import AccountManager
-import logging
 
 logger = logging.getLogger("db")
+
+
+@shared_task(name="content_creator", queue="main_queue")
+def content_creator(category, source_identifier, dest_identifier):
+    acc_obj = AccountManager("account")
+    source_identi_obj = acc_obj.get_account_object.get_credential_using_identifier(source_identifier)
+    dest_identi_obj = acc_obj.get_account_object.get_credential_using_identifier(dest_identifier)
+    account_obj = AccountManager(source_identi_obj.platform.name).account_obj
+    category_obj = account_obj.get_category_obj(category)
+    listing = account_obj.list_of_social_media_listing(category, source_identifier)
+
+    for obj in listing:
+        ContentModel.objects.update_or_create(social_media_url=obj["url"], defaults={
+            "destination_identifier": dest_identi_obj, "source_identifier": source_identi_obj,
+            "category": category_obj})
+    return listing
 
 
 @shared_task(name="generate_public_url", queue="main_queue")

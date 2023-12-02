@@ -1,1 +1,2 @@
-celery -A core worker -l DEBUG --concurrency=3 -Q main_queue
+celery -A core worker -l DEBUG --concurrency=3 --autoscale=5,3 -Q main_queue
+celery -A core beat   -l DEBUG --scheduler=django_celery_beat.schedulers:DatabaseScheduler

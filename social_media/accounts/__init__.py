@@ -1,9 +1,11 @@
+from .account import Account
 from .instagram import Instagram
 from .youtube import Youtube
 
 
 class AccountManager(object):
     account_dict = {
+        "account": Account(),
         "instagram": Instagram(),
         "youtube": Youtube()
     }

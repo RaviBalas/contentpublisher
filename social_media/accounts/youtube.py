@@ -18,6 +18,9 @@ class Youtube(Account):
         self.base_url = settings.YOUTUBE_ENDPOINT
         super(Youtube, self).__init__(*args, **kwargs)
 
+    def list_of_social_media_listing(self, category, identifier, **kwargs):
+        return []
+
     def generate_public_url(self, social_media_url):
         is_success = False
         try:

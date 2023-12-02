@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
-                ('social_media_url', models.TextField(blank=True, null=True)),
+                ('social_media_url', models.TextField(blank=True, null=True, unique=True)),
                 ('media_public_url', models.TextField(blank=True, null=True)),
                 ('media_name', models.CharField(blank=True, max_length=255, null=True)),
                 ('intermediate_id', models.CharField(blank=True, max_length=255, null=True)),

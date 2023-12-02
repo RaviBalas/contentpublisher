@@ -20,6 +20,9 @@ class Instagram(Account):
         super(Instagram, self).__init__(*args, **kwargs)
         self.error_code_mapping = instagram_error_keys_codes
 
+    def list_of_social_media_listing(self, category, identifier, **kwargs):
+        return []
+
     def generate_public_url(self, social_media_url):
         pass  # return public_url
 
