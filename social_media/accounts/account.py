@@ -11,9 +11,22 @@ class Account(object):
 
     @staticmethod
     def get_category_obj(category):
-        return Category.objects.get(name=category)
+        return Category.objects.get(name__iexact=category)
 
     def list_of_social_media_listing(self, category, identifier, **kwargs):
+        """
+        return {
+        next_page:XX,
+        media_list:[
+                        {
+                        "url" : https://www.youtube.com/shorts/uop8r9Dzu7k,
+                        "name": "Rohit sharma se milane pahucha fan 🏏|| indian cricket team || #shorts"
+                        }
+                        .
+                        .
+                ]
+        },is_success
+        """
         pass
 
     def generate_public_url(self, social_media_url):

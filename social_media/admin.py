@@ -16,6 +16,7 @@ class CategoryAdmin(ImportExportModelAdmin):
     list_display = ("name",)
     search_fields = ('name',)
     filter_horizontal = ("tags",)
+    ordering = ("name",)
     list_per_page = 25
 
 
@@ -30,4 +31,5 @@ class PlatformInfoAdmin(ImportExportModelAdmin):
 class CredModelAdmin(ImportExportModelAdmin):
     list_display = ("platform", "identifier", "client_id", "client_secret", "api_key", "username", "password")
     search_fields = ('platform',)
+    ordering = ("id",)
     list_per_page = 25

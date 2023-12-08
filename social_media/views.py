@@ -16,7 +16,7 @@ class Testview(APIView):
             if data.get("key") == "list_media":
                 acc_inst = AccountManager("instagram")
                 insta_obj = acc_inst.account_obj
-                response = insta_obj.get_list_of_media("app1")
+                response = insta_obj.get_self_list_of_media("app1")
                 return Response({"key": data["key"], "data": response}, status=200)
             elif data.get("key") == "video_download":
                 acc_inst = AccountManager("youtube")
@@ -53,7 +53,7 @@ class InstagramView(APIView):
     def get(self, request):
         acc_inst = AccountManager("instagram")
         insta_obj = acc_inst.account_obj
-        response = insta_obj.get_list_of_media(request.query_params.get("identifier"))
+        response = insta_obj.get_self_list_of_media(request.query_params.get("identifier"))
         return Response({"data": response}, status=200)
 
     def post(self, request):

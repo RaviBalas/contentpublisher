@@ -26,7 +26,7 @@ class Instagram(Account):
     def generate_public_url(self, social_media_url):
         pass  # return public_url
 
-    def get_list_of_media(self, identifier):
+    def get_self_list_of_media(self, identifier):
         obj = Credentials.objects.get(platform__name=self.name, identifier=identifier)
         url = posixpath.join(self.base_url, obj.extra_conf['ig_user_id'], "media")
         params = {"access_token": obj.access_token}  # user_access_token

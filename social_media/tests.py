@@ -13,5 +13,5 @@ class InstagramCase(TestCase):
     def test_list_of_media_instagram(self):
         a = AccountManager("instagram")
         i = a.account_obj
-        a = i.get_list_of_media("test1")
+        a = i.get_self_list_of_media("test1")
         print(a)

@@ -33,8 +33,7 @@ def save_logs(created_datetime, task_name=None, request_type=None, params=None, 
 
 
 def req_api_wrapper(request_type, url, json_data=None, headers=None, data=None, params=None, task_name="",
-                    files=None,
-                    timeout=120):
+                    files=None, timeout=120, save_log=True):
     error = None
     is_success = False
     created_datetime = timezone.now()
@@ -53,7 +52,7 @@ def req_api_wrapper(request_type, url, json_data=None, headers=None, data=None, 
         print("Except Exception as e while calling api", str(e))
         status_code = 500
         res = str(e)
-
-    save_logs(created_datetime, task_name=task_name, request_type=request_type, url=url, data=data, files=files,
-              params=params, json_body=json_data, response=res, status_code=status_code, error=error)
+    if save_log:
+        save_logs(created_datetime, task_name=task_name, request_type=request_type, url=url, data=data, files=files,
+                  params=params, json_body=json_data, response=res, status_code=status_code, error=error)
     return res, is_success

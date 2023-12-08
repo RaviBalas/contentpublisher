@@ -177,5 +177,5 @@ CELERY_TIMEZONE = "Asia/Kolkata"
 
 # facebook
 FACEBOOK_ENDPOINT = os.getenv("FACEBOOK_ENDPOINT", "https://graph.facebook.com/v18.0")
-YOUTUBE_ENDPOINT = os.getenv("YOUTUBE_ENDPOINT", "")
+YOUTUBE_ENDPOINT = os.getenv("YOUTUBE_ENDPOINT", "https://www.googleapis.com")
 BACKEND_PUBLIC_URL = os.getenv("BACKEND_PUBLIC_URL", "")

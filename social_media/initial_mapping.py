@@ -1,3 +1,12 @@
+youtube_video_category_mapping = {
+    'film & animation': '1', 'autos & vehicles': '2', 'music': '10', 'pets & animals': '15', 'sports': '17',
+    'short movies': '18', 'travel & events': '19', 'gaming': '20', 'videoblogging': '21', 'people & blogs': '22',
+    'comedy': '23', 'entertainment': '24', 'news & politics': '25', 'howto & style': '26', 'education': '27',
+    'science & technology': '28', 'movies': '30', 'anime/animation': '31', 'action/adventure': '32', 'classics': '33',
+    'documentary': '35', 'drama': '36', 'family': '37', 'foreign': '38', 'horror': '39',
+    'sci-fi/fantasy': '40', 'thriller': '41', 'shorts': '42', 'shows': '43', 'trailers': '44'
+}
+
 instagram_error_keys_codes = {
     -2: {
         "2207003": "It takes too long to download the media. A timeout occured while downloading the media. Try again.",
