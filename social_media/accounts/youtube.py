@@ -1,6 +1,8 @@
 import os
 import posixpath
 import random
+from datetime import datetime
+
 import yt_dlp
 
 from django.conf import settings
@@ -70,9 +72,10 @@ class Youtube(Account):
         is_success = False
         try:
             saved_path = os.path.join(settings.BASE_DIR, 'media')
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             ydl_opts = {
-                'format': 'bestvideo+bestaudio/best',
-                'outtmpl': f'{saved_path}/VIDEO_{random.randint(1000, 9999)}.%(ext)s',
+                'format': 'bestvideo[height<=1920]+bestaudio/best[height<=1920]',
+                'outtmpl': f'{saved_path}/VIDEO_{timestamp}.%(ext)s',
                 'postprocessors': [{
                     'key': 'FFmpegVideoConvertor',
                     'preferedformat': 'mp4',
@@ -86,6 +89,12 @@ class Youtube(Account):
                 video_basename = os.path.splitext(os.path.basename(default_value))[0]
                 video_filename = f"{video_basename}.mp4"
                 public_url = os.path.join(settings.BACKEND_PUBLIC_URL, 'media/', video_filename)
+                converted_video_filename = f"{video_basename}_converted.mp4"
+                converted_video_path = os.path.join(saved_path, converted_video_filename)
+                os.system(
+                    f"ffmpeg -i {public_url} -c:v libx264 -preset slow -crf 22 -c:a aac -b:a 192k -movflags +faststart {converted_video_path}")
+                public_url = os.path.join(settings.BACKEND_PUBLIC_URL, 'media/', converted_video_filename)
+
                 res, is_success = {'url': public_url, "media_type": 'reels', 'name': title}, True
         except Exception as e:
             res = str(e)

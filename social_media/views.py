@@ -21,7 +21,7 @@ class Testview(APIView):
             elif data.get("key") == "video_download":
                 acc_inst = AccountManager("youtube")
                 insta_obj = acc_inst.account_obj
-                response = insta_obj.generate_public_url("https://youtube.com/shorts/agJ0CvXXNRo?si=1Ub0GU28dUA_fAKB")
+                response = insta_obj.generate_public_url("https://youtube.com/shorts/46mIjzoGyG4?si=DWC-lWfoXFyCwWFy")
                 return Response({"key": data["key"], "data": response}, status=200)
             elif data.get("key") == "create_container":
                 acc_inst = AccountManager("instagram")
