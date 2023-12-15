@@ -31,7 +31,6 @@ def content_creator(category, source_identifier, dest_identifier, no_of_post=1, 
             res, is_success = account_obj.list_of_social_media_listing(category,
                                                                        source_identifier,
                                                                        next_page=next_page,
-                                                                       page_size=no_of_post,
                                                                        q=q)
             if is_success:
                 listing = res["media_list"]
@@ -70,6 +69,7 @@ def generate_public_url(source_identifier=None, content_ids=None):
         else:
             content_queryset = ContentModel.objects.filter(video_public_url=None)
 
+        content_queryset = content_queryset.order_by("created_at")
         for inst in content_queryset:
             account_obj = AccountManager(inst.source_identifier.platform.name).account_obj
             res, is_success = account_obj.generate_public_url(inst.social_media_url)
