@@ -9,7 +9,7 @@ class ApiLogsModelAdmin(ImportExportModelAdmin):
     list_display = ("created_at", "task_name", "status_code", "request_type", "url", "error", "param", "data", "files",
                     "json", "response", "time_taken")
     ordering = ("-created_at",)
-    search_fields = ("type", "url", "task_name")
+    search_fields = ("url", "task_name", "param")
     list_filter = ("task_name", "status_code", "request_type", "created_at")
     list_per_page = 25
 

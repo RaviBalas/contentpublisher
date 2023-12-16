@@ -101,8 +101,14 @@ def publish_content(destination_identifier=None, content_ids=None):
 
         for inst in content_queryset:
             account_obj = AccountManager(inst.destination_identifier.platform.name).account_obj
+            category_tags = inst.category.tags.values_list("name", flat=True)
+            tags_str = "\n".join("#" + tag for tag in category_tags) if category_tags else ""
+            media_caption = f"{inst.media_name}"
+            if tags_str:
+                media_caption += f"\n{tags_str}"
+
             res, is_success = account_obj.publish_content(inst.destination_identifier.identifier,
-                                                          media_caption=inst.media_name,
+                                                          media_caption=media_caption,
                                                           media_url=inst.media_public_url)
             if is_success:
                 inst.status = StatusChoices.SUCCESS

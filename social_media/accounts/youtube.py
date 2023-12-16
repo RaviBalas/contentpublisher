@@ -12,6 +12,7 @@ from common.utils import req_api_wrapper
 from social_media.models import Credentials
 from social_media.initial_mapping import youtube_video_category_mapping
 from .account import Account
+import concurrent.futures
 
 
 class Youtube(Account):
@@ -23,13 +24,23 @@ class Youtube(Account):
 
     @classmethod
     def filter_with_type(cls, media_obj, media_type):
-        if media_type == "shorts":
-            if "shorts" in media_obj["name"].lower() or "shorts" in media_obj["description"].lower():
-                return True
-            url = f"https://yt.lemnoslife.com/videos?part=short&id={media_obj['url']}"
-            res, is_success = req_api_wrapper("GET", url, save_log=False)
-            if is_success:
-                return res["items"]["short"]["available"]
+        try:
+            if media_type == "shorts":
+                if "shorts" in media_obj["title"].lower() or "shorts" in media_obj["description"].lower():
+                    return True
+                else:
+                    url = f"https://yt.lemnoslife.com/videos?part=short&id={media_obj['url']}"
+                    res, is_success = req_api_wrapper("GET", url, save_log=False)
+                    if is_success:
+                        short_info = res.get("items", {}).get("short", {})
+                        if "available" in short_info:
+                            return short_info["available"]
+                        else:
+                            return "Error: 'available' key not found in the API response.", False
+                    else:
+                        return "API request failed", False
+        except Exception as e:
+            return "An unexpected error occurred:", e
 
     def list_of_social_media_listing(self, category, identifier, **kwargs):
         """
@@ -65,7 +76,23 @@ class Youtube(Account):
                 media_list.append({"url": f"https://www.youtube.com/shorts/{i['id']['videoId']}",
                                    "title": i["snippet"]["title"],
                                    "description": i["snippet"]["description"]})
+                print("media_list", media_list)
             response["media_list"] = media_list
+            with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+                futures = []
+                for i in media_list:
+                    future = executor.submit(self.filter_with_type, i, 'shorts')
+                    futures.append(future)
+                futures = [executor.submit(self.filter_with_type, i, 'shorts') for i in media_list]
+                concurrent.futures.wait(futures)
+                results = []
+                for future in futures:
+                    result = future.result()
+                    results.append(result)
+                shorts_available_list = [result for result in results if result]
+            response["shorts_available_list"] = shorts_available_list
+            print("shorts_available_list", shorts_available_list)
+            print("response", response)
             return response, is_success
         return res, is_success
 
@@ -99,6 +126,11 @@ class Youtube(Account):
                                    }, True
         except Exception as e:
             res = str(e)
+        finally:
+            pass
+            # todo: Remove temp file
+            # if os.path.exists(original_video_path):
+            #     os.remove(original_video_path)
         return res, is_success
 
     def publish_content(self, identifier, **kwargs):
