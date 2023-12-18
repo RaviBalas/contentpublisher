@@ -78,20 +78,22 @@ class Youtube(Account):
                                    "description": i["snippet"]["description"]})
                 print("media_list", media_list)
             response["media_list"] = media_list
+            shorts_available_list = []
             with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
                 futures = []
                 for i in media_list:
                     future = executor.submit(self.filter_with_type, i, 'shorts')
                     futures.append(future)
-                futures = [executor.submit(self.filter_with_type, i, 'shorts') for i in media_list]
-                concurrent.futures.wait(futures)
-                results = []
-                for future in futures:
-                    result = future.result()
-                    results.append(result)
-                shorts_available_list = [result for result in results if result]
+                    concurrent.futures.wait(futures)
+                    if future.result():
+                        shorts_available_list.append(i)
+            #         results = []
+            #     for future in futures:
+            #         result = future.result()
+            #         media_list.append(result)
+            #     shorts_available_list = [result for result in results if result]
             response["shorts_available_list"] = shorts_available_list
-            print("shorts_available_list", shorts_available_list)
+            # print("shorts_available_list", shorts_available_list)
             print("response", response)
             return response, is_success
         return res, is_success
