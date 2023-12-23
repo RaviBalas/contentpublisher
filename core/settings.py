@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+import sys
 import environ
 from os.path import dirname, abspath
 from pathlib import Path
@@ -106,7 +107,8 @@ DATABASES = {
 
 default_database = os.environ.get('DJ_DB', 'default')
 DATABASES['default'] = DATABASES[default_database]
-print("selected DB=", DATABASES['default']["NAME"])
+if "runserver" in sys.argv:
+    print("selected DB=", DATABASES['default']["NAME"])
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 

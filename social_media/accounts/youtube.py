@@ -28,19 +28,9 @@ class Youtube(Account):
             if media_type == "shorts":
                 if "shorts" in media_obj["title"].lower() or "shorts" in media_obj["description"].lower():
                     return True
-                else:
-                    url = f"https://yt.lemnoslife.com/videos?part=short&id={media_obj['url']}"
-                    res, is_success = req_api_wrapper("GET", url, save_log=False)
-                    if is_success:
-                        short_info = res.get("items", {}).get("short", {})
-                        if "available" in short_info:
-                            return short_info["available"]
-                        else:
-                            return "Error: 'available' key not found in the API response.", False
-                    else:
-                        return "API request failed", False
+                return False
         except Exception as e:
-            return "An unexpected error occurred:", e
+            return False
 
     def list_of_social_media_listing(self, category, identifier, **kwargs):
         """
@@ -76,37 +66,20 @@ class Youtube(Account):
                 media_list.append({"url": f"https://www.youtube.com/shorts/{i['id']['videoId']}",
                                    "title": i["snippet"]["title"],
                                    "description": i["snippet"]["description"]})
-                print("media_list", media_list)
-            response["media_list"] = media_list
-            shorts_available_list = []
             with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-                futures = []
-                for i in media_list:
-                    future = executor.submit(self.filter_with_type, i, 'shorts')
-                    futures.append(future)
-                    concurrent.futures.wait(futures)
-                    if future.result():
-                        shorts_available_list.append(i)
-            #         results = []
-            #     for future in futures:
-            #         result = future.result()
-            #         media_list.append(result)
-            #     shorts_available_list = [result for result in results if result]
-            response["shorts_available_list"] = shorts_available_list
-            # print("shorts_available_list", shorts_available_list)
-            print("response", response)
+                results = list(executor.map(lambda i: self.filter_with_type(i, 'shorts'), media_list))
+            response["media_list"] = [i for i, j in zip(media_list, results) if j]
             return response, is_success
         return res, is_success
 
     def generate_public_url(self, social_media_url):
         is_success = False
         try:
-            media_root = os.path.join(settings.BASE_DIR, 'media')
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             random_str = "".join(random.choices(string.ascii_letters + string.digits, k=16))
             ydl_opts = {
                 'format': 'bestvideo[height<=1920]+bestaudio/best[height<=1920]',
-                'outtmpl': f'{media_root}/VIDEO_{timestamp}_{random_str}.%(ext)s',
+                'outtmpl': f'{settings.MEDIA_ROOT}/VIDEO_{timestamp}_{random_str}.%(ext)s',
                 'postprocessors': [{
                     'key': 'FFmpegVideoConvertor',
                     'preferedformat': 'mp4',
@@ -118,11 +91,11 @@ class Youtube(Account):
                 default_value = outtmpl_value["default"]
                 video_basename = os.path.splitext(os.path.basename(default_value))[0]
                 video_filename = f"{video_basename}.mp4"
-                local_url = os.path.join(media_root, 'media', video_filename)
+                local_url = os.path.join(settings.MEDIA_ROOT, f"{video_basename}")
                 os.system(
-                    f"ffmpeg -i {local_url} -c:v libx264 -preset slow -crf 22 -c:a aac -b:a 192k -movflags +faststart -y {local_url}")
-
-                res, is_success = {'url': os.path.join(settings.BACKEND_PUBLIC_URL, 'media', video_filename),
+                    f"ffmpeg -i {local_url}.mp4 -c:v libx264 -preset slow -crf 22 -c:a aac -b:a 192k -movflags +faststart -y {local_url}1.mp4")
+                os.remove(f"{local_url}.mp4")
+                res, is_success = {'url': f"media/{video_basename}1.mp4",
                                    "media_type": 'reels',
                                    'name': info_dict['title']
                                    }, True

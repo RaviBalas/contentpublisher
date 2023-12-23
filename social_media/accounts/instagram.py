@@ -41,21 +41,22 @@ class Instagram(Account):
                   "caption": video_caption,
                   "share_to_feed": True,
                   }
-        res, is_success = req_api_wrapper("POST", url, params=params, task_name="create_container")
+        res, is_success = req_api_wrapper("POST", url, params=params, task_name="create_container", retry_count=3)
         return res, is_success
 
     def get_container_status(self, identifier, container_id):
         obj = Credentials.objects.get(platform__name=self.name, identifier=identifier)
         url = posixpath.join(self.base_url, str(container_id))
         params = {"access_token": obj.access_token, "fields": "status_code,status"}
-        res, is_success = req_api_wrapper("GET", url, params=params, task_name="container_status", timeout=20)
+        res, is_success = req_api_wrapper("GET", url, params=params, task_name="container_status", timeout=20,
+                                          retry_count=3)
         return res, is_success
 
     def publish_container(self, identifier, container_id):
         obj = Credentials.objects.get(platform__name=self.name, identifier=identifier)
         url = posixpath.join(self.base_url, obj.extra_conf["ig_user_id"], "media_publish")
         params = {"access_token": obj.access_token, "creation_id": container_id}
-        res, is_success = req_api_wrapper("POST", url, params=params, task_name="media_publish")
+        res, is_success = req_api_wrapper("POST", url, params=params, task_name="media_publish", retry_count=3)
         return res, is_success
 
     def publish_content(self, identifier, **kwargs):
@@ -64,11 +65,14 @@ class Instagram(Account):
                                                 video_url=kwargs["media_url"],
                                                 video_caption=kwargs["media_caption"])
         if is_success:
+            container_id = res["id"]
             while True:
                 time.sleep(60)
-                res, is_success = self.get_container_status(identifier, container_id=res["id"])
-                if is_success and res["status_code"] == "FINISHED":
-                    res, is_success = self.publish_container(identifier, container_id=res["id"])
+                res, is_success = self.get_container_status(identifier, container_id=container_id)
+                if not is_success:
+                    continue
+                elif is_success and res["status_code"] == "FINISHED":
+                    res, is_success = self.publish_container(identifier, container_id=container_id)
                     break
                 elif is_success and res["status_code"] == "ERROR":
                     is_success = False

@@ -13,6 +13,9 @@ services:
     command: bash -c "python manage.py runserver 0.0.0.0:8080"
     ports:
       - "8000:8080"
+    depends_on:
+      - redis
+      - db
   main_queue:
     build: .
     env_file:
@@ -24,6 +27,9 @@ services:
     volumes:
       - ./media:/app/media
     command: bash -c " celery -A core worker -l DEBUG --concurrency=3 --autoscale=5,3 -Q main_queue"
+    depends_on:
+      - redis
+      - db
   beat_scheduler:
     build: .
     env_file:
@@ -35,3 +41,23 @@ services:
     volumes:
       - ./media:/app/media
     command: bash -c "celery -A core beat   -l DEBUG --scheduler=django_celery_beat.schedulers:DatabaseScheduler"
+    depends_on:
+      - redis
+      - db
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+  db:
+    restart: always
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=artivatic26
+      - POSTGRES_DB=contentdb
+    ports:
+      - "5432:5432"
+volumes:
+    postgres_data:

@@ -1,4 +1,5 @@
 import json
+import time
 
 import requests
 from django.utils import timezone
@@ -33,26 +34,35 @@ def save_logs(created_datetime, task_name=None, request_type=None, params=None, 
 
 
 def req_api_wrapper(request_type, url, json_data=None, headers=None, data=None, params=None, task_name="",
-                    files=None, timeout=120, save_log=True):
+                    files=None, timeout=120, save_log=True, retry_count=1):
+    count = 0
     error = None
     is_success = False
-    created_datetime = timezone.now()
-    try:
-        response = requests.request(request_type, url, data=data, json=json_data, headers=headers, params=params,
-                                    files=files,
-                                    timeout=timeout)
-        status_code = response.status_code
-        if status_code in [200, 201]:
-            res = response.json()
-            is_success = True
-        else:
-            res = response.text
-    except Exception as e:
-        error = str(e)
-        print("Except Exception as e while calling api", str(e))
-        status_code = 500
-        res = str(e)
-    if save_log:
-        save_logs(created_datetime, task_name=task_name, request_type=request_type, url=url, data=data, files=files,
-                  params=params, json_body=json_data, response=res, status_code=status_code, error=error)
+    res = None
+    while count < retry_count:
+        created_datetime = timezone.now()
+        try:
+            response = requests.request(request_type, url, data=data, json=json_data, headers=headers, params=params,
+                                        files=files, timeout=timeout)
+            status_code = response.status_code
+            if status_code in [200, 201]:
+                res = response.json()
+                is_success = True
+                count = retry_count
+                error = None
+            else:
+                is_success = False
+                res = response.text
+                count = retry_count + 1
+        except Exception as e:
+            is_success = False
+            count = retry_count + 1
+            error = str(e)
+            print("Except Exception as e while calling api", str(e))
+            status_code = 500
+            res = str(e)
+        if save_log:
+            save_logs(created_datetime, task_name=task_name, request_type=request_type, url=url, data=data, files=files,
+                      params=params, json_body=json_data, response=res, status_code=status_code, error=error)
+        time.sleep(5)
     return res, is_success

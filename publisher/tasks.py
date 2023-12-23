@@ -1,5 +1,9 @@
+import os
 import logging
 from celery import shared_task
+from django.conf import settings
+from django.db.models import Value, F
+from django.db.models.functions import Concat
 
 from common.db_log_handler import log_error
 from .models import ContentModel, StatusChoices
@@ -74,6 +78,8 @@ def generate_public_url(source_identifier=None, content_ids=None):
             account_obj = AccountManager(inst.source_identifier.platform.name).account_obj
             res, is_success = account_obj.generate_public_url(inst.social_media_url)
             if is_success:
+                if inst.media_public_url and os.path.isfile(inst.media_public_url):
+                    os.remove(inst.media_public_url)
                 inst.media_public_url = res.get("url")
                 inst.media_name = res.get("name")
                 inst.status = StatusChoices.PUBLIC_URL_CREATED
@@ -101,18 +107,17 @@ def publish_content(destination_identifier=None, content_ids=None):
 
         for inst in content_queryset:
             account_obj = AccountManager(inst.destination_identifier.platform.name).account_obj
-            category_tags = inst.category.tags.values_list("name", flat=True)
-            tags_str = "\n".join("#" + tag for tag in category_tags) if category_tags else ""
-            media_caption = f"{inst.media_name}"
-            if tags_str:
-                media_caption += f"\n{tags_str}"
-
+            hashtags = inst.category.tags.annotate(hashtag=Concat(Value("#"), F("name"))).values_list("hashtag",
+                                                                                                      flat=True)
+            media_caption = f"{inst.media_name}" + "\n".join(hashtags)
+            media_url = os.path.join(settings.BACKEND_PUBLIC_URL, inst.media_public_url)
             res, is_success = account_obj.publish_content(inst.destination_identifier.identifier,
                                                           media_caption=media_caption,
-                                                          media_url=inst.media_public_url)
+                                                          media_url=media_url)
             if is_success:
                 inst.status = StatusChoices.SUCCESS
                 inst.error = None
+                os.remove(inst.media_public_url)
             else:
                 inst.error = res
                 inst.status = StatusChoices.FAILED

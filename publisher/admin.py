@@ -8,7 +8,7 @@ from .models import ContentModel, StatusChoices
 class ContentModelAdmin(ImportExportModelAdmin):
     list_display = ("created_at", "media_name", "category", "updated_at", "status", "source_identifier",
                     "social_media_url", "media_public_url", "intermediate_id", "destination_identifier", "error")
-    search_fields = ("media_name",)
+    search_fields = ("media_name", "media_name", "social_media_url", "media_public_url")
     list_filter = ("status", "category", "source_identifier", "destination_identifier", 'created_at')
     ordering = ("-created_at",)
     list_per_page = 25
